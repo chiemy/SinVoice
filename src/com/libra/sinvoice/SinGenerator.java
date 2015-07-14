@@ -19,6 +19,9 @@ package com.libra.sinvoice;
 import com.libra.sinvoice.Buffer.BufferData;
 import com.libra.sinvoice.LogHelper;
 
+/**
+ * 声音生成
+ */
 public class SinGenerator {
     private static final String TAG = "SinGenerator";
 
@@ -51,8 +54,14 @@ public class SinGenerator {
     private Callback mCallback;
 
     public static interface Listener {
+    	/**
+    	 * 开始生成
+    	 */
         void onStartGen();
 
+        /**
+         * 生产结束
+         */
         void onStopGen();
     }
 
@@ -111,6 +120,7 @@ public class SinGenerator {
             LogHelper.d(TAG, "genRate:" + genRate);
             if (null != mCallback) {
                 mFilledSize = 0;
+                // 从生产队列中取
                 BufferData buffer = mCallback.getGenBuffer();
                 if (null != buffer) {
                     for (int i = 0; i < totalCount; ++i) {
@@ -120,6 +130,7 @@ public class SinGenerator {
                             if (mFilledSize >= mBufferSize - 1) {
                                 // free buffer
                                 buffer.setFilledSize(mFilledSize);
+                                // 放到消费队列中
                                 mCallback.freeGenBuffer(buffer);
 
                                 mFilledSize = 0;
@@ -147,6 +158,7 @@ public class SinGenerator {
 
                 if (null != buffer) {
                     buffer.setFilledSize(mFilledSize);
+                    // 放到消费队列中
                     mCallback.freeGenBuffer(buffer);
                 }
                 mFilledSize = 0;

@@ -24,6 +24,10 @@ import android.text.TextUtils;
 
 import com.libra.sinvoice.Buffer.BufferData;
 
+/**
+ * 发送声波类
+ *
+ */
 public class SinVoicePlayer implements Encoder.Listener, Encoder.Callback, PcmPlayer.Listener, PcmPlayer.Callback {
     private final static String TAG = "SinVoicePlayer";
 
@@ -55,10 +59,21 @@ public class SinVoicePlayer implements Encoder.Listener, Encoder.Callback, PcmPl
         this(Common.DEFAULT_CODE_BOOK);
     }
 
+    /**
+     * 
+     * @param codeBook 码本，码本中文字对应的频率，见{@link Encoder#CODE_FREQUENCY}
+     */
     public SinVoicePlayer(String codeBook) {
         this(codeBook, Common.DEFAULT_SAMPLE_RATE, Common.DEFAULT_BUFFER_SIZE, Common.DEFAULT_BUFFER_COUNT);
     }
 
+    /**
+     * 
+     * @param codeBook 码本，码本中文字对应的频率，见{@link Encoder#CODE_FREQUENCY}
+     * @param sampleRate
+     * @param bufferSize
+     * @param buffCount
+     */
     public SinVoicePlayer(String codeBook, int sampleRate, int bufferSize, int buffCount) {
         mState = STATE_STOP;
         mBuffer = new Buffer(buffCount, bufferSize);
@@ -81,17 +96,25 @@ public class SinVoicePlayer implements Encoder.Listener, Encoder.Callback, PcmPl
         }
     }
 
+    /**
+     * 将文字转换
+     * @param text
+     * @return 是否转换成功
+     */
     private boolean convertTextToCodes(String text) {
         boolean ret = true;
 
         if (!TextUtils.isEmpty(text)) {
             mCodes.clear();
+            //开始标志
             mCodes.add(Common.START_TOKEN);
             int len = text.length();
             for (int i = 0; i < len; ++i) {
                 char ch = text.charAt(i);
+                // 找到字符在码本中的位置
                 int index = mCodeBook.indexOf(ch);
                 if (index > -1) {
+                	//将字符在码本中的位置存到集合中
                     mCodes.add(index + 1);
                 } else {
                     ret = false;
@@ -100,6 +123,7 @@ public class SinVoicePlayer implements Encoder.Listener, Encoder.Callback, PcmPl
                 }
             }
             if (ret) {
+            	//结束标志
                 mCodes.add(Common.STOP_TOKEN);
             }
         } else {
@@ -109,10 +133,20 @@ public class SinVoicePlayer implements Encoder.Listener, Encoder.Callback, PcmPl
         return ret;
     }
 
+    /**
+     * 
+     * @param text
+     */
     public void play(final String text) {
         play(text, false, 0);
     }
 
+    /**
+     * 将文字转换为声音播放
+     * @param text 发送的文字
+     * @param repeat 是否重复
+     * @param muteInterval 
+     */
     public void play(final String text, final boolean repeat, final int muteInterval) {
         if (STATE_STOP == mState && null != mCodeBook && convertTextToCodes(text)) {
             mState = STATE_PENDING;

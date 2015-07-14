@@ -71,6 +71,10 @@ public class Buffer {
         this(Common.DEFAULT_BUFFER_COUNT, Common.DEFAULT_BUFFER_SIZE);
     }
 
+    /**
+     * @param bufferCount 缓存声音数组的数量
+     * @param bufferSize 数组最大字节数
+     */
     public Buffer(int bufferCount, int bufferSize) {
         mBufferSize = bufferSize;
         mBufferCount = bufferCount;
@@ -116,18 +120,36 @@ public class Buffer {
         return mConsumeQueue.size();
     }
 
+    /**
+     * 从生产队列中取一个空的数组
+     * @return
+     */
     public BufferData getEmpty() {
         return getImpl(mProducerQueue);
     }
 
+    /**
+     * 向生产队列中添加一个空数组
+     * @param data
+     * @return
+     */
     public boolean putEmpty(BufferData data) {
         return putImpl(data, mProducerQueue);
     }
 
+    /**
+     * 从消费队列中取一个填充过的数组
+     * @return
+     */
     public BufferData getFull() {
         return getImpl(mConsumeQueue);
     }
 
+    /**
+     * 向消费队列中添加一个填充过的数组
+     * @param data
+     * @return
+     */
     public boolean putFull(BufferData data) {
         return putImpl(data, mConsumeQueue);
     }

@@ -20,7 +20,7 @@ public class MainActivity extends Activity implements SinVoiceRecognition.Listen
     private final static int MSG_RECG_START = 2;
     private final static int MSG_RECG_END = 3;
 
-    private final static String CODEBOOK = "12345";
+    private final static String CODEBOOK = "abcde";
 
     private Handler mHanlder;
     private SinVoicePlayer mSinVoicePlayer;
@@ -79,9 +79,10 @@ public class MainActivity extends Activity implements SinVoiceRecognition.Listen
         StringBuilder sb = new StringBuilder();
         int pre = 0;
         while (count > 0) {
-            int x = (int) (Math.random() * MAX_NUMBER + 1);
+            int x = (int) (Math.random() * MAX_NUMBER);
+            char c = CODEBOOK.charAt(x);
             if (Math.abs(x - pre) > 0) {
-                sb.append(x);
+                sb.append(c);
                 --count;
                 pre = x;
             }

@@ -39,13 +39,30 @@ public class PcmPlayer {
     }
 
     public static interface Callback {
+    	/**
+    	 * 从消费队列中取一条数据
+    	 * @return
+    	 */
         BufferData getPlayBuffer();
-
+        /**
+         * 释放，放入生产队列中
+         * @param data
+         */
         void freePlayData(BufferData data);
     }
 
+    /**
+     * 
+     * @param callback
+     * @param sampleRate 设置音频数据的采样率
+     * @param channel 设置输出声道,AudioFormat.CHANNEL_OUT_STERE双声道，AudioFormat.CHANNEL_OUT_MONO单声道
+     * @param format 设置音频数据块是8位还是16位
+     * @param bufferSize
+     * http://blog.chinaunix.net/uid-20546441-id-1645702.html
+     */
     public PcmPlayer(Callback callback, int sampleRate, int channel, int format, int bufferSize) {
         mCallback = callback;
+        bufferSize = Math.max(AudioTrack.getMinBufferSize(sampleRate, channel, format), bufferSize);
         mAudio = new AudioTrack(AudioManager.STREAM_MUSIC, sampleRate, channel, format, bufferSize, AudioTrack.MODE_STREAM);
         mState = STATE_STOP;
         mPlayedLen = 0;
@@ -68,7 +85,7 @@ public class PcmPlayer {
                 }
                 while (STATE_START == mState) {
                     LogHelper.d(TAG, "start getbuffer");
-
+                    // 从消费队列中取出一个
                     BufferData data = mCallback.getPlayBuffer();
                     if (null != data) {
                         if (null != data.mData) {
@@ -78,6 +95,7 @@ public class PcmPlayer {
                                 mAudio.play();
                             }
                             mPlayedLen += len;
+                            // 将消费的这条添加到生产队列中
                             mCallback.freePlayData(data);
                         } else {
                             // it is the end of input, so need stop
