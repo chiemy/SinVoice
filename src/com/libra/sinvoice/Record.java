@@ -21,7 +21,10 @@ import android.media.AudioRecord;
 import android.media.MediaRecorder;
 
 import com.libra.sinvoice.Buffer.BufferData;
-
+/**
+ * 收集声音类<br>
+ * <p>将声音转换为字符编码，放到队列中</p> 
+ */
 public class Record {
     private final static String TAG = "Record";
     private final static int STATE_START = 1;
@@ -96,10 +99,12 @@ public class Record {
             int minBufferSize = AudioRecord.getMinBufferSize(mFrequence, mChannelConfig, mAudioEncoding);
             LogHelper.d(TAG, "minBufferSize:" + minBufferSize);
             if ( mBufferSize >= minBufferSize ) {
+            	// 第二个参数，采样频率
                 AudioRecord record = new AudioRecord(MediaRecorder.AudioSource.MIC, mFrequence, mChannelConfig, mAudioEncoding, mBufferSize);
                 if (null != record) {
                     try {
                         mState = STATE_START;
+                        // 开始收集声音
                         record.startRecording();
                         LogHelper.d(TAG, "record start");
 
@@ -112,9 +117,11 @@ public class Record {
                                 BufferData data = mCallback.getRecordBuffer();
                                 if (null != data) {
                                     if (null != data.mData) {
+                                    	// 将声音（即消息中的一个字符转换成的声音）转换为字节数组
+                                    	// 即一个字符-->字节数组
                                         int bufferReadResult = record.read(data.mData, 0, mBufferSize);
                                         data.setFilledSize(bufferReadResult);
-
+                                        // 将数据放入队列中，等待VoiceRecognition解析
                                         mCallback.freeRecordBuffer(data);
                                     } else {
                                         // end of input

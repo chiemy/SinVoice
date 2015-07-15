@@ -19,7 +19,8 @@ public class MainActivity extends Activity implements SinVoiceRecognition.Listen
     private final static int MSG_SET_RECG_TEXT = 1;
     private final static int MSG_RECG_START = 2;
     private final static int MSG_RECG_END = 3;
-
+    // 注意：码本中字符的个数 = Encoder中CODE_FREQUENCY数组的长度-2
+    // 如果要向码本中添加字符，也需要在CODE_FREQUENCY数组中添加对应的频率
     private final static String CODEBOOK = "abcde";
 
     private Handler mHanlder;

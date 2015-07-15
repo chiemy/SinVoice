@@ -19,7 +19,11 @@ package com.libra.sinvoice;
 import android.text.TextUtils;
 
 import com.libra.sinvoice.Buffer.BufferData;
-
+/**
+ * 接收端<br>
+ * 负责：接收收声音、解码、数据拆分<br>
+ * 
+ */
 public class SinVoiceRecognition implements Record.Listener, Record.Callback, VoiceRecognition.Listener, VoiceRecognition.Callback {
     private final static String TAG = "SinVoiceRecognition";
 
@@ -73,12 +77,19 @@ public class SinVoiceRecognition implements Record.Listener, Record.Callback, Vo
         mListener = listener;
     }
 
+    /**
+     * 设置码本
+     * @param codeBook
+     */
     public void setCodeBook(String codeBook) {
         if (!TextUtils.isEmpty(codeBook) && codeBook.length() <= mMaxCodeIndex) {
             mCodeBook = codeBook;
         }
     }
 
+    /**
+     * 开始接收
+     */
     public void start() {
         if (STATE_STOP == mState) {
             mState = STATE_PENDING;
@@ -214,6 +225,7 @@ public class SinVoiceRecognition implements Record.Listener, Record.Callback, Vo
             } else if (Common.STOP_TOKEN == index) {
                 mListener.onRecognitionEnd();
             } else if (index > 0 && index <= mMaxCodeIndex) {
+            	// 根据在码本中的位置，获取字符
                 mListener.onRecognition(mCodeBook.charAt(index - 1));
             }
         }

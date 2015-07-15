@@ -120,7 +120,7 @@ public class SinGenerator {
             LogHelper.d(TAG, "genRate:" + genRate);
             if (null != mCallback) {
                 mFilledSize = 0;
-                // 从生产队列中取
+                // 从生产队列中取出
                 BufferData buffer = mCallback.getGenBuffer();
                 if (null != buffer) {
                     for (int i = 0; i < totalCount; ++i) {

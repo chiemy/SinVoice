@@ -17,7 +17,9 @@
 package com.libra.sinvoice;
 
 import com.libra.sinvoice.Buffer.BufferData;
-
+/**
+ * 根据声音信息，获取在码本中对应的位置
+ */
 public class VoiceRecognition {
     private final static String TAG = "Recognition";
 
@@ -79,6 +81,9 @@ public class VoiceRecognition {
         mListener = listener;
     }
 
+    /**
+     * 
+     */
     public void start() {
         if (STATE_STOP == mState) {
 
@@ -96,9 +101,11 @@ public class VoiceRecognition {
                     mListener.onStartRecognition();
                 }
                 while (STATE_START == mState) {
+                	// 从队列中取出
                     BufferData data = mCallback.getRecognitionBuffer();
                     if (null != data) {
                         if (null != data.mData) {
+                        	// 解析数据
                             process(data);
 
                             mCallback.freeRecognitionBuffer(data);

@@ -25,8 +25,11 @@ import android.text.TextUtils;
 import com.libra.sinvoice.Buffer.BufferData;
 
 /**
- * 发送声波类
- *
+ * 发送端<br>
+ * <p>负责：数据组合、编码（加密）、发声</p>
+ * <p>基本流程：<br>
+ * Encoder类交由SinGenerator类对文字进行编码处理，处理完成后放入Buffer的队列中。<br>
+ * 然后PcmPlayer从Buffer队列中取出处理结果，进行音频播放</p>
  */
 public class SinVoicePlayer implements Encoder.Listener, Encoder.Callback, PcmPlayer.Listener, PcmPlayer.Callback {
     private final static String TAG = "SinVoicePlayer";
@@ -106,7 +109,7 @@ public class SinVoicePlayer implements Encoder.Listener, Encoder.Callback, PcmPl
 
         if (!TextUtils.isEmpty(text)) {
             mCodes.clear();
-            //开始标志
+            // 声音开始标志
             mCodes.add(Common.START_TOKEN);
             int len = text.length();
             for (int i = 0; i < len; ++i) {
@@ -123,7 +126,7 @@ public class SinVoicePlayer implements Encoder.Listener, Encoder.Callback, PcmPl
                 }
             }
             if (ret) {
-            	//结束标志
+            	// 声音结束标志
                 mCodes.add(Common.STOP_TOKEN);
             }
         } else {
@@ -142,10 +145,12 @@ public class SinVoicePlayer implements Encoder.Listener, Encoder.Callback, PcmPl
     }
 
     /**
-     * 将文字转换为声音播放
+     * 将文字转换为声音播放<br>
+     * PcmPlayer不断的从Buffer队列中取处理结果进行播放<br>
+     * Encoder不断的将处理结果，放到Buffer队列中<br>
      * @param text 发送的文字
      * @param repeat 是否重复
-     * @param muteInterval 
+     * @param muteInterval 两次声音的间隔
      */
     public void play(final String text, final boolean repeat, final int muteInterval) {
         if (STATE_STOP == mState && null != mCodeBook && convertTextToCodes(text)) {
@@ -182,7 +187,9 @@ public class SinVoicePlayer implements Encoder.Listener, Encoder.Callback, PcmPl
             mState = STATE_START;
         }
     }
-
+    /**
+     * 停止编码
+     */
     public void stop() {
         if (STATE_START == mState) {
             mState = STATE_PENDING;
@@ -202,7 +209,9 @@ public class SinVoicePlayer implements Encoder.Listener, Encoder.Callback, PcmPl
             LogHelper.d(TAG, "force stop end");
         }
     }
-
+    /**
+     * 停止播放
+     */
     private void stopPlayer() {
         if (mEncoder.isStoped()) {
             mPlayer.stop();

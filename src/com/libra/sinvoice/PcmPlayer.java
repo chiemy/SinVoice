@@ -20,7 +20,9 @@ import android.media.AudioManager;
 import android.media.AudioTrack;
 
 import com.libra.sinvoice.Buffer.BufferData;
-
+/**
+ * 
+ */
 public class PcmPlayer {
     private final static String TAG = "PcmPlayer";
     private final static int STATE_START = 1;
@@ -63,6 +65,7 @@ public class PcmPlayer {
     public PcmPlayer(Callback callback, int sampleRate, int channel, int format, int bufferSize) {
         mCallback = callback;
         bufferSize = Math.max(AudioTrack.getMinBufferSize(sampleRate, channel, format), bufferSize);
+        // 最后一个参数表示，已流的形式播放，即一部分一部分的播放
         mAudio = new AudioTrack(AudioManager.STREAM_MUSIC, sampleRate, channel, format, bufferSize, AudioTrack.MODE_STREAM);
         mState = STATE_STOP;
         mPlayedLen = 0;
