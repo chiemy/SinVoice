@@ -11,11 +11,11 @@
 
 ##2.实现
 ###2.1发送端设计
-![发送端的设计](doc/design/SinVoicePlayer.png)
+![发送端的设计](doc/design/SinVoicePlayer.PNG)
 
 **基本流程说明**：调用`SinVoicePlayer`的`play()`方法，`Encoder`交由`SinGenerator`对文字进行编码处理，编码完成后，经由`SinVoicePlayer`将处理结果放入`Buffer`的队列中，`PcmPlayer`从`Buffer`的队列中取出处理结果进行播放。
 
 ###2.2接收端设计
-![发送端的设计](doc/design/SinVoiceRecognition.png)
+![发送端的设计](doc/design/SinVoiceRecognition.PNG)
 
 **基本流程说明**：调用`SinVoiceRecognition`的`start()`方法，`Record`开始收集声音，并将声音转换为字节数组，放入`Buffer`的队列中，然后`VoiceRecognition`从`Buffer`的队列中取出字节数组，获取此字节数组代码的字符在码本中的位置，最后`SinVoiceRecognition`在码本中查到到相应位置的字符。
