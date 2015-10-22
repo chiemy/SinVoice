@@ -20,7 +20,9 @@ import com.libra.sinvoice.Buffer.BufferData;
 import com.libra.sinvoice.LogHelper;
 
 /**
- * 声音生成
+ * 正弦音波生成<br>
+ * 纯音是一种固定频率的声波，也就是正弦声波了。那么要实现Andoird播放纯音，那么首先就应该绘制出正弦波来。<br>
+ * <a href="http://blog.csdn.net/cshichao/article/details/8646913">参考</a>
  */
 public class SinGenerator {
     private static final String TAG = "SinGenerator";
@@ -30,7 +32,7 @@ public class SinGenerator {
 
     public static final int BITS_8 = 128;
     public static final int BITS_16 = 32768;
-
+    
     public static final int SAMPLE_RATE_8 = 8000;
     public static final int SAMPLE_RATE_11 = 11250;
     public static final int SAMPLE_RATE_16 = 16000;
@@ -103,6 +105,11 @@ public class SinGenerator {
         }
     }
 
+    /**
+     * 
+     * @param genRate 生成音波的频率
+     * @param duration 时长
+     */
     public void gen(int genRate, int duration) {
         if (STATE_START == mState) {
             mGenRate = genRate;
@@ -112,8 +119,12 @@ public class SinGenerator {
                 mListener.onStartGen();
             }
 
+            // 正弦波峰？
             int n = mBits / 2;
+            // 采样点个数？frame? mSampleRate单位时间为秒，所以要除以1000。
             int totalCount = (mDuration * mSampleRate) / 1000;
+            
+            // 采集mGenRate频率的声音所需要的时间 = mGenRate / (double) mSampleRate?
             double per = (mGenRate / (double) mSampleRate) * 2 * Math.PI;
             double d = 0;
 
@@ -125,6 +136,8 @@ public class SinGenerator {
                 if (null != buffer) {
                     for (int i = 0; i < totalCount; ++i) {
                         if (STATE_START == mState) {
+                        	// 采样点x轴坐标 = Math.sin(d)
+                        	// 获取采样点的振幅，没有负值，所以+128
                             int out = (int) (Math.sin(d) * n) + 128;
 
                             if (mFilledSize >= mBufferSize - 1) {
@@ -141,8 +154,11 @@ public class SinGenerator {
                                 }
                             }
 
+                            // 0xff二进制 0000 0000 1111 1111
+                            // & 0xff 操作，舍弃了任意数的高八位(byte就是8位，不用&0xff也一样，直接强转byte也一样？)
                             buffer.mData[mFilledSize++] = (byte) (out & 0xff);
                             if (BITS_16 == mBits) {
+                            	// 保留高8位
                                 buffer.mData[mFilledSize++] = (byte) ((out >> 8) & 0xff);
                             }
 

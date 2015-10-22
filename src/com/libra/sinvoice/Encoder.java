@@ -60,6 +60,13 @@ public class Encoder implements SinGenerator.Listener, SinGenerator.Callback {
         BufferData getEncodeBuffer();
     }
 
+    /**
+     * 
+     * @param callback
+     * @param sampleRate 采用率？
+     * @param bits
+     * @param bufferSize 
+     */
     public Encoder(Callback callback, int sampleRate, int bits, int bufferSize) {
         mCallback = callback;
         mState = STATE_STOPED;
